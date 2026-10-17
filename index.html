@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eric Memorial School</title>
+<style>
+:root{--green:#1b7a3d;--green-dark:#125a2c;--green-light:#e6f6ea;--bg:#eaf7ee;--white:#fff;--text:#1c2b21;--muted:#5b6b60;--danger:#b3261e;--radius:12px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+main{flex:1}
+.hidden{display:none!important}
+.banner{background:#fff3cd;color:#664d03;padding:10px 16px;text-align:center;font-size:.9rem;font-weight:600}
+.site-header{background:var(--green);color:var(--white);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none}
+.crest{background:var(--white);color:var(--green);font-weight:800;border-radius:50%;width:46px;height:46px;display:grid;place-items:center;font-size:.95rem}
+.brand-text{display:flex;flex-direction:column;line-height:1.2}
+.brand-text small{opacity:.85;font-size:.72rem}
+nav{display:flex;gap:6px;align-items:center}
+nav a{color:var(--white);text-decoration:none;padding:8px 14px;border-radius:8px;font-weight:500}
+nav a:hover,nav a.active{background:rgba(255,255,255,.18)}
+nav a.nav-cta{background:var(--white);color:var(--green);font-weight:700}
+nav a.nav-cta:hover{background:var(--green-light)}
+.menu-btn{display:none;background:none;border:0;color:var(--white);font-size:1.8rem;cursor:pointer;padding:4px 10px}
+.hero{background:linear-gradient(135deg,var(--green),var(--green-dark));color:var(--white);text-align:center;padding:64px 20px}
+.hero h1{margin:0 0 10px;font-size:clamp(1.8rem,5vw,2.8rem)}
+.hero p{margin:0 0 22px;opacity:.95;font-size:1.1rem}
+.container{max-width:1050px;margin:0 auto;padding:32px 20px}
+.container.narrow{max-width:720px}
+.section-title{color:var(--green-dark);border-left:6px solid var(--green);padding-left:12px;margin:0 0 20px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.card{background:var(--white);border-radius:var(--radius);padding:22px;box-shadow:0 2px 10px rgba(27,122,61,.1);margin-bottom:20px}
+.card h3{color:var(--green-dark);margin-top:0}
+.posts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.post{background:var(--white);border-radius:var(--radius);padding:20px;border-top:5px solid var(--green);box-shadow:0 2px 10px rgba(27,122,61,.1)}
+.post h3{margin:0 0 6px;color:var(--green-dark)}
+.post time{font-size:.8rem;color:var(--muted)}
+.post p{margin:10px 0 0;white-space:pre-wrap}
+.checklist{padding-left:20px}
+.checklist li{margin:6px 0}
+.checklist li::marker{color:var(--green)}
+.btn{display:inline-block;background:var(--green);color:var(--white);border:2px solid var(--green);padding:10px 22px;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--green-dark);border-color:var(--green-dark)}
+.hero .btn{background:var(--white);color:var(--green);border-color:var(--white)}
+.btn.outline{background:transparent;color:var(--green)}
+.btn.outline:hover{background:var(--green);color:var(--white)}
+.form{display:flex;flex-direction:column;gap:14px}
+label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.92rem}
+input,select,textarea{padding:10px 12px;border:1.5px solid #c4dccb;border-radius:8px;font:inherit;background:#fbfffc}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(27,122,61,.18)}
+.msg{margin:0;min-height:1.2em;font-weight:600}
+.msg.error{color:var(--danger)}
+.msg.ok{color:var(--green)}
+.hint,.muted{color:var(--muted);font-size:.88rem;margin:0}
+.tabs{display:flex;gap:8px;margin-bottom:18px;border-bottom:2px solid var(--green-light)}
+.tab{background:none;border:0;padding:10px 14px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.dash-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+.dash-head h2{margin:0;color:var(--green-dark)}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:10px;text-align:left;border-bottom:1px solid #e1efe5}
+.table th{background:var(--green-light);color:var(--green-dark)}
+.fee-box{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.fee-box div{flex:1;min-width:90px;background:var(--green-light);padding:10px;border-radius:8px;text-align:center}
+.fee-box strong{display:block;font-size:1.15rem;color:var(--green-dark)}
+.history{list-style:none;padding:0;margin:0}
+.history li{padding:8px 0;border-bottom:1px solid #e1efe5;font-size:.9rem;display:flex;justify-content:space-between;gap:10px}
+.site-footer{background:var(--green-dark);color:var(--white);text-align:center;padding:16px}
+.site-footer p{margin:0}
+@media(max-width:700px){
+.menu-btn{display:block}
+nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--green);flex-direction:column;align-items:stretch;padding:10px 16px 16px}
+nav.open{display:flex}
+.brand-text small{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="banner" class="banner hidden"></div>
+
+<header class="site-header">
+  <a href="#home" class="brand">
+    <span class="crest">EMS</span>
+    <span class="brand-text"><strong>Eric Memorial School</strong><small>Knowledge · Character · Service</small></span>
+  </a>
+  <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false">☰</button>
+  <nav id="nav" aria-label="Main navigation">
+    <a href="#home">Home</a>
+    <a href="#admission">Admission</a>
+    <a href="#about">About Us</a>
+    <a href="#login" class="nav-cta" id="navLogin">Login Portal</a>
+  </nav>
+</header>
+
+<main>
+
+  <section id="page-home" class="page">
+    <div class="hero">
+      <h1>Welcome to Eric Memorial School</h1>
+      <p>Nurturing young minds with excellence, discipline and faith.</p>
+      <a href="#admission" class="btn">Apply for Admission</a>
+    </div>
+    <div class="container">
+      <h2 class="section-title">Latest Posts</h2>
+      <div id="posts" class="posts"></div>
+    </div>
+  </section>
+
+  <section id="page-admission" class="page hidden">
+    <div class="container narrow">
+      <h2 class="section-title">Admission</h2>
+      <div class="card">
+        <p>Admission to Eric Memorial School is open for the new academic year. Please complete the form below and our admissions office will contact you.</p>
+        <ul class="checklist">
+          <li>Birth certificate or valid ID of the child</li>
+          <li>Previous school report (for transfers)</li>
+          <li>Two passport-size photographs</li>
+          <li>Parent/guardian contact details</li>
+        </ul>
+      </div>
+      <form id="admissionForm" class="card form" novalidate>
+        <label>Child's full name<input name="child" required maxlength="80"></label>
+        <label>Class applying for
+          <select name="level" required>
+            <option value="">Select…</option>
+            <option>Nursery</option><option>Kindergarten</option>
+            <option>Primary 1–3</option><option>Primary 4–6</option>
+            <option>JHS 1</option><option>JHS 2</option><option>JHS 3</option>
+          </select>
+        </label>
+        <label>Parent/guardian name<input name="parent" required maxlength="80"></label>
+        <label>Phone number<input name="phone" type="tel" required maxlength="20"></label>
+        <label>Email (optional)<input name="email" type="email" maxlength="100"></label>
+        <button class="btn" type="submit">Submit Application</button>
+        <p id="admissionMsg" class="msg" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="page-about" class="page hidden">
+    <div class="container narrow">
+      <h2 class="section-title">About Us</h2>
+      <div class="card">
+        <h3>Who we are</h3>
+        <p>Eric Memorial School is a community school dedicated to giving every child a strong academic foundation and a good character. Founded in memory of Eric, whose life was marked by generosity and learning, the school continues his legacy of service.</p>
+        <h3>Our Mission</h3>
+        <p>To provide quality, affordable education that develops confident, responsible and curious learners who contribute positively to society.</p>
+        <h3>Our Vision</h3>
+        <p>To be a leading school known for academic excellence, discipline and innovation, especially in science and technology.</p>
+        <h3>Our Values</h3>
+        <ul class="checklist">
+          <li>Integrity and respect</li>
+          <li>Hard work and excellence</li>
+          <li>Faith and service</li>
+          <li>Curiosity and innovation</li>
+        </ul>
+        <p>Our dedicated teachers deliver Mathematics, Science, English and Technology alongside sports, arts and moral education.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-login" class="page hidden">
+    <div class="container narrow">
+      <h2 class="section-title">Login Portal</h2>
+      <div class="card auth-card">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="signin" role="tab">Sign In</button>
+          <button class="tab" data-tab="activate" role="tab">First time? Create password</button>
+        </div>
+        <form id="loginForm" class="form" novalidate>
+          <label>Portal
+            <select name="role"><option value="student">Student</option><option value="staff">Teacher / Staff</option></select>
+          </label>
+          <label>ID Number<input name="id" placeholder="e.g. EMS0001 or TCH001" autocomplete="username" required></label>
+          <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+          <button class="btn" type="submit">Sign In</button>
+          <p id="loginMsg" class="msg" role="status"></p>
+        </form>
+        <form id="activateForm" class="form hidden" novalidate>
+          <p class="hint">Use the ID given to you by the school, confirm your surname, then choose your own password. Nobody else knows it.</p>
+          <label>ID Number<input name="id" placeholder="e.g. EMS0001 or TCH001" autocomplete="username" required></label>
+          <label>Surname (as registered)<input name="surname" required></label>
+          <label>Create password<input name="password" type="password" autocomplete="new-password" required minlength="8"></label>
+          <label>Confirm password<input name="confirm" type="password" autocomplete="new-password" required></label>
+          <p class="hint">At least 8 characters, with a letter and a number.</p>
+          <button class="btn" type="submit">Create Password</button>
+          <p id="activateMsg" class="msg" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-student" class="page hidden">
+    <div class="container">
+      <div class="dash-head">
+        <div><h2 id="stName"></h2><p id="stMeta" class="muted"></p></div>
+        <button class="btn outline" data-logout>Log out</button>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <h3>My Grades</h3>
+          <table class="table" id="gradeTable">
+            <thead><tr><th>Subject</th><th>Score</th><th>Grade</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>School Fees</h3>
+          <div id="feeSummary"></div>
+          <form id="payForm" class="form" novalidate>
+            <label>Amount to pay (GH₵)<input name="amount" type="number" min="1" step="0.01" required></label>
+            <label>Payment method
+              <select name="method"><option>Mobile Money</option><option>Card</option><option>Bank transfer</option></select>
+            </label>
+            <button class="btn" type="submit">Pay Fees</button>
+            <p id="payMsg" class="msg" role="status"></p>
+          </form>
+          <h4>Payment history</h4>
+          <ul id="payHistory" class="history"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-staff" class="page hidden">
+    <div class="container">
+      <div class="dash-head">
+        <div><h2 id="tcName"></h2><p id="tcMeta" class="muted"></p></div>
+        <button class="btn outline" data-logout>Log out</button>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <h3>Enter Student Grades</h3>
+          <form id="gradeForm" class="form" novalidate>
+            <label>Student ID<input name="id" placeholder="EMS0001" required></label>
+            <label>Subject
+              <select name="subject"><option>Mathematics</option><option>Science</option><option>English</option><option>Technology</option></select>
+            </label>
+            <label>Score (0–100)<input name="score" type="number" min="0" max="100" required></label>
+            <button class="btn" type="submit">Save Grade</button>
+            <p id="gradeMsg" class="msg" role="status"></p>
+          </form>
+        </div>
+        <div class="card">
+          <h3>Post to Home Page</h3>
+          <form id="postForm" class="form" novalidate>
+            <label>Title<input name="title" required maxlength="100"></label>
+            <label>Message<textarea name="body" rows="4" required maxlength="1000"></textarea></label>
+            <button class="btn" type="submit">Publish</button>
+            <p id="postMsg" class="msg" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>© <span id="year"></span> Eric Memorial School · Accra, Ghana</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+'use strict';
+
+/* =====================================================
+   PASTE YOUR KEYS HERE (Supabase → Project Settings → API)
+   Keep the quote marks. Use the anon/publishable key only.
+   ===================================================== */
+const SUPABASE_URL = 'https://kmdqphuklzdlelbetmzp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_L0Jp2JjRSMesMD3BlqHjfg_wiZVBKKE';
+
+/* ---------- Helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const money = (n) => 'GH₵ ' + Number(n).toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+function say(el, text, ok) { el.textContent = text; el.className = 'msg ' + (ok ? 'ok' : 'error'); }
+
+const SUBJECTS = ['Mathematics', 'Science', 'English', 'Technology'];
+const FEE_PER_TERM = 1500;
+const idEmail = (id) => id.trim().toLowerCase() + '@ems-portal.com';
+const passwordOk = (p) => p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p);
+const toPerson = (r) => r && ({ id: r.id, firstName: r.first_name, surname: r.surname, role: r.role, className: r.class_name, subject: r.subject });
+const gradeLetter = (s) => s >= 80 ? 'A' : s >= 70 ? 'B' : s >= 60 ? 'C' : s >= 50 ? 'D' : s >= 40 ? 'E' : 'F';
+
+const SAMPLE_POSTS = [
+  { title: 'Welcome to the new academic year', body: 'We welcome all students, parents and staff back to Eric Memorial School. Let us make this a year of excellence.', date: '2026-09-07' },
+  { title: 'Admissions now open', body: 'Admission forms for Nursery to JHS 3 are available. Visit the Admission page to apply.', date: '2026-09-14' },
+  { title: 'Science & Technology fair', body: 'Our annual fair holds next month. Students are encouraged to prepare their projects with their teachers.', date: '2026-10-01' }
+];
+
+/* ---------- Safe Supabase start (a problem here never breaks the menu or links) ---------- */
+let sb = null;
+let setupProblem = '';
+try {
+  if (!window.supabase) throw new Error('Supabase library did not load. Check your internet connection.');
+  if (SUPABASE_URL.includes('PASTE') || SUPABASE_ANON_KEY.includes('PASTE')) throw new Error('Supabase keys not added yet. Login and saving are off until you paste them.');
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) {
+  setupProblem = e.message;
+}
+if (setupProblem) { const b = $('#banner'); b.textContent = '⚠ ' + setupProblem; b.classList.remove('hidden'); }
+const needSb = () => { if (!sb) throw new Error('Backend not connected yet. Add your Supabase keys.'); };
+
+let me = null;
+
+/* ---------- Data layer ---------- */
+const DB = {
+  async activate({ id, surname, password }) {
+    needSb();
+    if (!passwordOk(password)) throw new Error('Password needs 8+ characters with a letter and a number.');
+    const { error } = await sb.auth.signUp({
+      email: idEmail(id), password,
+      options: { data: { person_id: id.trim().toUpperCase(), surname: surname.trim() } }
+    });
+    if (error) {
+      if (/already/i.test(error.message)) throw new Error('This account already has a password. Please sign in.');
+      if (/rate/i.test(error.message)) throw new Error('Too many attempts. Please try again later.');
+      throw new Error('ID and surname do not match our records.');
+    }
+    await sb.auth.signOut();
+  },
+  async login({ id, password, role }) {
+    needSb();
+    const { error } = await sb.auth.signInWithPassword({ email: idEmail(id), password });
+    if (error) throw new Error('Invalid ID or password. First time? Use the "Create password" tab.');
+    const p = await DB.me();
+    if (!p || p.role !== role) { await sb.auth.signOut(); throw new Error('Invalid ID or password.'); }
+    return p;
+  },
+  async me() {
+    if (!sb) return null;
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return null;
+      const { data } = await sb.from('people').select('*').eq('auth_id', session.user.id).maybeSingle();
+      return toPerson(data);
+    } catch { return null; }
+  },
+  async logout() { if (sb) await sb.auth.signOut(); },
+  async getGrades(id) {
+    needSb();
+    const { data, error } = await sb.from('grades').select('subject,score').eq('student_id', id);
+    if (error) throw error;
+    return Object.fromEntries(data.map((r) => [r.subject, r.score]));
+  },
+  async setGrade(id, subject, score) {
+    needSb();
+    const { error } = await sb.from('grades').upsert(
+      { student_id: id.trim().toUpperCase(), subject, score }, { onConflict: 'student_id,subject' });
+    if (error) {
+      if (error.code === '23503') throw new Error('Student ID not found.');
+      if (error.code === '42501') throw new Error('You can only enter grades for your own subject.');
+      throw new Error(error.message);
+    }
+  },
+  async getPayments(id) {
+    needSb();
+    const { data, error } = await sb.from('payments').select('*').eq('student_id', id).order('created_at', { ascending: false });
+    if (error) throw error;
+    return data.map((p) => ({ amount: Number(p.amount), method: p.method, ref: p.ref, date: p.created_at }));
+  },
+  // DEMO payment: replace with a Paystack-verified Edge Function before taking real money
+  async pay(id, amount, method) {
+    needSb();
+    const { error } = await sb.from('payments').insert({ student_id: id, amount, method, ref: 'DEMO-' + Date.now().toString(36).toUpperCase() });
+    if (error) throw new Error(error.message);
+  },
+  async getPosts() {
+    if (!sb) return SAMPLE_POSTS;
+    const { data, error } = await sb.from('posts').select('title,body,created_at').order('created_at', { ascending: false });
+    if (error) throw error;
+    return data.map((p) => ({ title: p.title, body: p.body, date: p.created_at }));
+  },
+  async addPost(title, body) {
+    needSb();
+    const { error } = await sb.from('posts').insert({ title, body });
+    if (error) throw new Error('Only staff can post.');
+  },
+  async submitApplication(d) {
+    needSb();
+    const { error } = await sb.from('applications').insert({ child: d.child, level: d.level, parent: d.parent, phone: d.phone, email: d.email || null });
+    if (error) throw new Error('Could not submit. Please try again.');
+  }
+};
+
+/* ---------- Router ---------- */
+const PAGES = ['home', 'admission', 'about', 'login', 'student', 'staff'];
+function route() {
+  let page = location.hash.replace('#', '') || 'home';
+  if (!PAGES.includes(page)) page = 'home';
+  if (page === 'student' || page === 'staff') page = me ? me.role : 'login';
+  if (page === 'login' && me) page = me.role;
+  $$('.page').forEach((s) => s.classList.add('hidden'));
+  $('#page-' + page).classList.remove('hidden');
+  $$('nav a').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + page));
+  $('#navLogin').textContent = me ? 'My Portal' : 'Login Portal';
+  $('#navLogin').setAttribute('href', me ? '#' + me.role : '#login');
+  $('#nav').classList.remove('open'); $('#menuBtn').setAttribute('aria-expanded', 'false');
+  window.scrollTo(0, 0);
+  if (page === 'home') renderPosts();
+  if (page === 'student') renderStudent(me);
+  if (page === 'staff') renderStaff(me);
+}
+window.addEventListener('hashchange', route);
+
+/* ---------- Renderers ---------- */
+async function renderPosts() {
+  let posts;
+  try { posts = await DB.getPosts(); } catch { posts = SAMPLE_POSTS; }
+  $('#posts').innerHTML = posts.map((p) =>
+    `<article class="post"><h3>${esc(p.title)}</h3><time>${fmtDate(p.date)}</time><p>${esc(p.body)}</p></article>`).join('');
+}
+
+async function renderStudent(u) {
+  $('#stName').textContent = `${u.firstName} ${u.surname}`;
+  $('#stMeta').textContent = `Student ID: ${u.id} · Class: ${u.className}`;
+  let grades = {}, pays = [];
+  try { grades = await DB.getGrades(u.id); pays = await DB.getPayments(u.id); } catch {}
+  $('#gradeTable tbody').innerHTML = SUBJECTS.map((s) => {
+    const v = grades[s];
+    return `<tr><td>${s}</td><td>${v ?? '—'}</td><td>${v == null ? 'Pending' : gradeLetter(v)}</td></tr>`;
+  }).join('');
+  const paid = pays.reduce((t, p) => t + p.amount, 0);
+  const bal = Math.max(FEE_PER_TERM - paid, 0);
+  $('#feeSummary').innerHTML = `<div class="fee-box">
+    <div><small>Term fee</small><strong>${money(FEE_PER_TERM)}</strong></div>
+    <div><small>Paid</small><strong>${money(paid)}</strong></div>
+    <div><small>Balance</small><strong>${money(bal)}</strong></div></div>`;
+  $('#payHistory').innerHTML = pays.length
+    ? pays.map((p) => `<li><span>${fmtDate(p.date)} · ${esc(p.method)} · ${esc(p.ref)}</span><strong>${money(p.amount)}</strong></li>`).join('')
+    : '<li>No payments yet.</li>';
+}
+
+function renderStaff(u) {
+  $('#tcName').textContent = `${u.firstName} ${u.surname}`;
+  $('#tcMeta').textContent = `Staff ID: ${u.id} · Subject: ${u.subject}`;
+  $('#gradeForm [name=subject]').value = u.subject;
+}
+
+/* ---------- Events ---------- */
+$('#menuBtn').addEventListener('click', () => {
+  const open = $('#nav').classList.toggle('open');
+  $('#menuBtn').setAttribute('aria-expanded', open);
+});
+
+$$('.tab').forEach((t) => t.addEventListener('click', () => {
+  $$('.tab').forEach((x) => x.classList.toggle('active', x === t));
+  $('#loginForm').classList.toggle('hidden', t.dataset.tab !== 'signin');
+  $('#activateForm').classList.toggle('hidden', t.dataset.tab !== 'activate');
+}));
+
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target, msg = $('#loginMsg');
+  say(msg, 'Signing in…', true);
+  try {
+    me = await DB.login({ id: f.id.value, password: f.password.value, role: f.role.value });
+    f.reset(); msg.textContent = '';
+    location.hash = '#' + me.role; route();
+  } catch (err) { say(msg, err.message); }
+});
+
+$('#activateForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target, msg = $('#activateMsg');
+  if (f.password.value !== f.confirm.value) return say(msg, 'Passwords do not match.');
+  say(msg, 'Creating…', true);
+  try {
+    await DB.activate({ id: f.id.value, surname: f.surname.value, password: f.password.value });
+    say(msg, 'Password created! You can now sign in.', true);
+    f.reset();
+    setTimeout(() => $('[data-tab=signin]').click(), 1200);
+  } catch (err) { say(msg, err.message); }
+});
+
+$('#payForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!me) return route();
+  const amt = parseFloat(e.target.amount.value), msg = $('#payMsg');
+  try {
+    const bal = FEE_PER_TERM - (await DB.getPayments(me.id)).reduce((t, p) => t + p.amount, 0);
+    if (!(amt > 0)) return say(msg, 'Enter a valid amount.');
+    if (amt > bal) return say(msg, 'Amount is more than your balance.');
+    await DB.pay(me.id, amt, e.target.method.value);
+    say(msg, 'Demo payment recorded. Real payments need Paystack.', true);
+    e.target.reset(); renderStudent(me);
+  } catch (err) { say(msg, err.message); }
+});
+
+$('#gradeForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!me || me.role !== 'staff') return route();
+  const f = e.target, msg = $('#gradeMsg'), score = Number(f.score.value);
+  if (!(score >= 0 && score <= 100)) return say(msg, 'Score must be 0–100.');
+  try { await DB.setGrade(f.id.value, f.subject.value, score); say(msg, 'Grade saved.', true); f.score.value = ''; }
+  catch (err) { say(msg, err.message); }
+});
+
+$('#postForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!me || me.role !== 'staff') return route();
+  const f = e.target;
+  try {
+    await DB.addPost(f.title.value.trim(), f.body.value.trim());
+    say($('#postMsg'), 'Post published on the home page.', true); f.reset();
+  } catch (err) { say($('#postMsg'), err.message); }
+});
+
+$('#admissionForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = e.target, msg = $('#admissionMsg');
+  if (!f.child.value.trim() || !f.level.value || !f.parent.value.trim() || !f.phone.value.trim())
+    return say(msg, 'Please fill in all required fields.');
+  try {
+    await DB.submitApplication(Object.fromEntries(new FormData(f)));
+    say(msg, 'Application received. We will contact you soon.', true); f.reset();
+  } catch (err) { say(msg, err.message); }
+});
+
+async function doLogout() { await DB.logout(); me = null; location.hash = '#home'; route(); }
+document.addEventListener('click', (e) => { if (e.target.closest('[data-logout]')) doLogout(); });
+
+/* 15-minute idle sign-out */
+let lastActive = Date.now();
+['click', 'keydown', 'touchstart'].forEach((ev) => document.addEventListener(ev, () => { lastActive = Date.now(); }));
+setInterval(() => { if (me && Date.now() - lastActive > 15 * 60 * 1000) doLogout(); }, 30000);
+
+/* ---------- Start ---------- */
+$('#year').textContent = new Date().getFullYear();
+route();                                   // show the page immediately
+DB.me().then((p) => { me = p; route(); }); // then check if someone is already logged in
+</script>
+</body>
+</html>
