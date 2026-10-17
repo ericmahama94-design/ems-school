@@ -96,6 +96,7 @@ nav.open{display:flex}
 
 <main>
 
+  <!-- HOME -->
   <section id="page-home" class="page">
     <div class="hero">
       <h1>Welcome to Eric Memorial School</h1>
@@ -108,6 +109,7 @@ nav.open{display:flex}
     </div>
   </section>
 
+  <!-- ADMISSION -->
   <section id="page-admission" class="page hidden">
     <div class="container narrow">
       <h2 class="section-title">Admission</h2>
@@ -139,6 +141,7 @@ nav.open{display:flex}
     </div>
   </section>
 
+  <!-- ABOUT -->
   <section id="page-about" class="page hidden">
     <div class="container narrow">
       <h2 class="section-title">About Us</h2>
@@ -161,6 +164,7 @@ nav.open{display:flex}
     </div>
   </section>
 
+  <!-- LOGIN -->
   <section id="page-login" class="page hidden">
     <div class="container narrow">
       <h2 class="section-title">Login Portal</h2>
@@ -169,6 +173,7 @@ nav.open{display:flex}
           <button class="tab active" data-tab="signin" role="tab">Sign In</button>
           <button class="tab" data-tab="activate" role="tab">First time? Create password</button>
         </div>
+
         <form id="loginForm" class="form" novalidate>
           <label>Portal
             <select name="role"><option value="student">Student</option><option value="staff">Teacher / Staff</option></select>
@@ -178,10 +183,12 @@ nav.open{display:flex}
           <button class="btn" type="submit">Sign In</button>
           <p id="loginMsg" class="msg" role="status"></p>
         </form>
+
         <form id="activateForm" class="form hidden" novalidate>
-          <p class="hint">Use the ID given to you by the school, confirm your surname, then choose your own password. Nobody else knows it.</p>
+          <p class="hint">Use the ID and activation code given to you by the school, confirm your surname, then choose your own password. Nobody else knows it.</p>
           <label>ID Number<input name="id" placeholder="e.g. EMS0001 or TCH001" autocomplete="username" required></label>
           <label>Surname (as registered)<input name="surname" required></label>
+          <label>Activation code (from the school)<input name="code" autocomplete="off" required></label>
           <label>Create password<input name="password" type="password" autocomplete="new-password" required minlength="8"></label>
           <label>Confirm password<input name="confirm" type="password" autocomplete="new-password" required></label>
           <p class="hint">At least 8 characters, with a letter and a number.</p>
@@ -192,6 +199,7 @@ nav.open{display:flex}
     </div>
   </section>
 
+  <!-- STUDENT DASHBOARD -->
   <section id="page-student" class="page hidden">
     <div class="container">
       <div class="dash-head">
@@ -211,9 +219,8 @@ nav.open{display:flex}
           <div id="feeSummary"></div>
           <form id="payForm" class="form" novalidate>
             <label>Amount to pay (GH₵)<input name="amount" type="number" min="1" step="0.01" required></label>
-            <label>Payment method
-              <select name="method"><option>Mobile Money</option><option>Card</option><option>Bank transfer</option></select>
-            </label>
+            <label>Email for your receipt<input name="email" type="email" required></label>
+            <p class="hint">You'll choose Mobile Money or Card on Paystack's secure page.</p>
             <button class="btn" type="submit">Pay Fees</button>
             <p id="payMsg" class="msg" role="status"></p>
           </form>
@@ -224,6 +231,7 @@ nav.open{display:flex}
     </div>
   </section>
 
+  <!-- STAFF DASHBOARD -->
   <section id="page-staff" class="page hidden">
     <div class="container">
       <div class="dash-head">
@@ -270,8 +278,8 @@ nav.open{display:flex}
    PASTE YOUR KEYS HERE (Supabase → Project Settings → API)
    Keep the quote marks. Use the anon/publishable key only.
    ===================================================== */
-const SUPABASE_URL = 'https://kmdqphuklzdlelbetmzp.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_L0Jp2JjRSMesMD3BlqHjfg_wiZVBKKE';
+const SUPABASE_URL = 'PASTE_YOUR_PROJECT_URL_HERE';
+const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
 
 /* ---------- Helpers ---------- */
 const $ = (s, el = document) => el.querySelector(s);
@@ -280,10 +288,11 @@ const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const money = (n) => 'GH₵ ' + Number(n).toLocaleString('en-GH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 function say(el, text, ok) { el.textContent = text; el.className = 'msg ' + (ok ? 'ok' : 'error'); }
+function setBanner(text) { const b = $('#banner'); b.textContent = text; b.classList.remove('hidden'); }
 
 const SUBJECTS = ['Mathematics', 'Science', 'English', 'Technology'];
-const FEE_PER_TERM = 1500;
-const idEmail = (id) => id.trim().toLowerCase() + '@ems-portal.com';
+const FEE_PER_TERM = 1500; // keep the same number in the Supabase "pay" function
+const idEmail = (id) => id.trim().toLowerCase() + '@ems-portal.com'; // never emailed
 const passwordOk = (p) => p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p);
 const toPerson = (r) => r && ({ id: r.id, firstName: r.first_name, surname: r.surname, role: r.role, className: r.class_name, subject: r.subject });
 const gradeLetter = (s) => s >= 80 ? 'A' : s >= 70 ? 'B' : s >= 60 ? 'C' : s >= 50 ? 'D' : s >= 40 ? 'E' : 'F';
@@ -301,36 +310,39 @@ try {
   if (!window.supabase) throw new Error('Supabase library did not load. Check your internet connection.');
   if (SUPABASE_URL.includes('PASTE') || SUPABASE_ANON_KEY.includes('PASTE')) throw new Error('Supabase keys not added yet. Login and saving are off until you paste them.');
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch (e) {
-  setupProblem = e.message;
-}
-if (setupProblem) { const b = $('#banner'); b.textContent = '⚠ ' + setupProblem; b.classList.remove('hidden'); }
+} catch (e) { setupProblem = e.message; }
+if (setupProblem) setBanner('⚠ ' + setupProblem);
 const needSb = () => { if (!sb) throw new Error('Backend not connected yet. Add your Supabase keys.'); };
 
 let me = null;
 
 /* ---------- Data layer ---------- */
 const DB = {
-  async activate({ id, surname, password }) {
+  async activate({ id, surname, code, password }) {
     needSb();
     if (!passwordOk(password)) throw new Error('Password needs 8+ characters with a letter and a number.');
     const { error } = await sb.auth.signUp({
       email: idEmail(id), password,
-      options: { data: { person_id: id.trim().toUpperCase(), surname: surname.trim() } }
+      options: { data: { person_id: id.trim().toUpperCase(), surname: surname.trim(), code: code.trim() } }
     });
     if (error) {
-      if (/already/i.test(error.message)) throw new Error('This account already has a password. Please sign in.');
-      if (/rate/i.test(error.message)) throw new Error('Too many attempts. Please try again later.');
-      throw new Error('ID and surname do not match our records.');
+      const m = error.message || '';
+      if (/already/i.test(m) && /registered|exists/i.test(m)) throw new Error('This account already has a password. Please sign in.');
+      if (/rate|too many/i.test(m)) throw new Error('Too many attempts. Please try again later.');
+      if (/not allowed|disabled/i.test(m)) throw new Error('Sign-ups are switched off in Supabase (Authentication → Sign In / Providers).');
+      throw new Error('ID, surname or activation code is incorrect. (' + m + ')');
     }
     await sb.auth.signOut();
   },
   async login({ id, password, role }) {
     needSb();
     const { error } = await sb.auth.signInWithPassword({ email: idEmail(id), password });
-    if (error) throw new Error('Invalid ID or password. First time? Use the "Create password" tab.');
+    if (error) {
+      if (/not confirmed/i.test(error.message)) throw new Error('Account not confirmed yet. Ask the school admin.');
+      throw new Error('Invalid ID or password. First time? Use the "Create password" tab.');
+    }
     const p = await DB.me();
-    if (!p || p.role !== role) { await sb.auth.signOut(); throw new Error('Invalid ID or password.'); }
+    if (!p || p.role !== role) { await sb.auth.signOut(); throw new Error('Wrong portal for this ID. Choose Student or Teacher / Staff correctly.'); }
     return p;
   },
   async me() {
@@ -365,11 +377,25 @@ const DB = {
     if (error) throw error;
     return data.map((p) => ({ amount: Number(p.amount), method: p.method, ref: p.ref, date: p.created_at }));
   },
-  // DEMO payment: replace with a Paystack-verified Edge Function before taking real money
-  async pay(id, amount, method) {
+  async startPayment(amount, email) {
     needSb();
-    const { error } = await sb.from('payments').insert({ student_id: id, amount, method, ref: 'DEMO-' + Date.now().toString(36).toUpperCase() });
-    if (error) throw new Error(error.message);
+    const { data, error } = await sb.functions.invoke('pay', { body: { action: 'init', amount, email } });
+    if (error) {
+      let m = 'Could not start payment.';
+      try { m = (await error.context.json()).error || m; } catch {}
+      throw new Error(m);
+    }
+    if (!data || !data.url) throw new Error('Could not start payment.');
+    return data.url;
+  },
+  async verifyPayment(reference) {
+    needSb();
+    const { error } = await sb.functions.invoke('pay', { body: { action: 'verify', reference } });
+    if (error) {
+      let m = 'Could not confirm payment.';
+      try { m = (await error.context.json()).error || m; } catch {}
+      throw new Error(m);
+    }
   },
   async getPosts() {
     if (!sb) return SAMPLE_POSTS;
@@ -472,7 +498,7 @@ $('#activateForm').addEventListener('submit', async (e) => {
   if (f.password.value !== f.confirm.value) return say(msg, 'Passwords do not match.');
   say(msg, 'Creating…', true);
   try {
-    await DB.activate({ id: f.id.value, surname: f.surname.value, password: f.password.value });
+    await DB.activate({ id: f.id.value, surname: f.surname.value, code: f.code.value, password: f.password.value });
     say(msg, 'Password created! You can now sign in.', true);
     f.reset();
     setTimeout(() => $('[data-tab=signin]').click(), 1200);
@@ -482,14 +508,13 @@ $('#activateForm').addEventListener('submit', async (e) => {
 $('#payForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!me) return route();
-  const amt = parseFloat(e.target.amount.value), msg = $('#payMsg');
+  const f = e.target, msg = $('#payMsg');
+  const amt = parseFloat(f.amount.value);
+  if (!(amt > 0)) return say(msg, 'Enter a valid amount.');
+  say(msg, 'Opening secure payment page…', true);
   try {
-    const bal = FEE_PER_TERM - (await DB.getPayments(me.id)).reduce((t, p) => t + p.amount, 0);
-    if (!(amt > 0)) return say(msg, 'Enter a valid amount.');
-    if (amt > bal) return say(msg, 'Amount is more than your balance.');
-    await DB.pay(me.id, amt, e.target.method.value);
-    say(msg, 'Demo payment recorded. Real payments need Paystack.', true);
-    e.target.reset(); renderStudent(me);
+    const url = await DB.startPayment(amt, f.email.value);
+    window.location.href = url;
   } catch (err) { say(msg, err.message); }
 });
 
@@ -531,10 +556,23 @@ let lastActive = Date.now();
 ['click', 'keydown', 'touchstart'].forEach((ev) => document.addEventListener(ev, () => { lastActive = Date.now(); }));
 setInterval(() => { if (me && Date.now() - lastActive > 15 * 60 * 1000) doLogout(); }, 30000);
 
+/* ---------- Return from Paystack ---------- */
+async function handlePaymentReturn() {
+  const ref = new URLSearchParams(location.search).get('reference');
+  if (!ref) return;
+  history.replaceState(null, '', location.pathname);
+  if (!me) { setBanner('Payment submitted. Sign in to see it on your page.'); return; }
+  try {
+    await DB.verifyPayment(ref);
+    location.hash = '#student'; route();
+    setBanner('✅ Payment received. Thank you!');
+  } catch (e) { setBanner(e.message); }
+}
+
 /* ---------- Start ---------- */
 $('#year').textContent = new Date().getFullYear();
-route();                                   // show the page immediately
-DB.me().then((p) => { me = p; route(); }); // then check if someone is already logged in
+route();                                                   // show the page immediately
+DB.me().then((p) => { me = p; route(); handlePaymentReturn(); }); // then check if someone is logged in
 </script>
 </body>
 </html>
